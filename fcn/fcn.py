@@ -167,7 +167,7 @@ class VGGNet(VGG):
         if pretrained:
             exec("self.load_state_dict(models.%s(pretrained=True).state_dict())" % model)
 
-        # self.load_state_dict(torch.load("model/ssl_vgg/iter_15000.pth"), strict=False) # load ssl pre-trained model
+        # self.load_state_dict(torch.load("model/ssl_vgg/iter_3000.pth"), strict=False) # load ssl pre-trained model
 
         if not requires_grad:
             for param in super().parameters():

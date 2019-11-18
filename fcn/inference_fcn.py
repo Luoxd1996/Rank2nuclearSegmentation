@@ -1,13 +1,12 @@
 import os
 import argparse
 import torch
-from unet_seg import UNet
 from fcn import fcn8s, fcn16s, fcn32s
 from inference_util import test_all_case
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--test_root', type=str,
-                    default='data/MICCAI2018/Test', help='Name of Experiment')
+                    default='../data/MICCAI2018/Test', help='Name of Experiment')
 parser.add_argument('--model', type=str,
                     default='MICCAI2018/Train/naive_fcn16s_ssl', help='model_name')
 parser.add_argument('--test_save_path', type=str,
@@ -16,7 +15,7 @@ parser.add_argument('--gpu', type=str,  default='0', help='GPU to use')
 FLAGS = parser.parse_args()
 
 os.environ['CUDA_VISIBLE_DEVICES'] = FLAGS.gpu
-snapshot_path = "model/"+FLAGS.model+"/"
+snapshot_path = "../model/"+FLAGS.model+"/"
 test_save_path = FLAGS.test_save_path
 if not os.path.exists(test_save_path):
     os.makedirs(test_save_path)
@@ -50,4 +49,4 @@ def test_calculate_metric(epoch_num):
 
 
 if __name__ == '__main__':
-    metric = test_calculate_metric(1000)
+    metric = test_calculate_metric(3000)

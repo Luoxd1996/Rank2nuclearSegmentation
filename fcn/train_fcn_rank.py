@@ -28,12 +28,12 @@ parser.add_argument('--data_list', type=str,
 parser.add_argument('--aug', type=bool, default=False,
                     help='image augmentation')
 parser.add_argument('--exp', type=str,
-                    default='ssl_vgg', help='model_name')
+                    default='ssl_vgg_without_imagenet', help='model_name')
 parser.add_argument('--max_iterations', type=int,
                     default=15000, help='maximum epoch number to train')
 parser.add_argument('--batch_size', type=int, default=1,
                     help='batch_size per gpu')
-parser.add_argument('--base_lr', type=float,  default=0.000001,
+parser.add_argument('--base_lr', type=float,  default=0.01,
                     help='maximum epoch number to train')
 parser.add_argument('--deterministic', type=int,  default=1,
                     help='whether use deterministic training')
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
     logging.info(str(args))
 
-    net = VGGNet()
+    net = VGGNet(pretrained=False)
     net = net.cuda()
     ranknet = RankNet()
     ranknet = ranknet.cuda()
@@ -159,11 +159,11 @@ if __name__ == "__main__":
                 writer.add_image('train/rankding_feature', rg_img, iter_num)
 
             # change lr
-            # if iter_num % 3000 == 0:
-            #     lr_ = base_lr * 0.1 ** (iter_num // 3000)
-            #     for param_group in optimizer.param_groups:
-            #         param_group['lr'] = lr_
-            if iter_num % 100 == 0:
+            if iter_num % 3000 == 0:
+                lr_ = base_lr * 0.1 ** (iter_num // 3000)
+                for param_group in optimizer.param_groups:
+                    param_group['lr'] = lr_
+            if iter_num % 1000 == 0:
                 save_mode_path = os.path.join(
                     snapshot_path, 'iter_' + str(iter_num) + '.pth')
                 torch.save(net.state_dict(), save_mode_path)
