@@ -49,9 +49,10 @@ def ranking_data_geneartor(x, ranking_crops=5, cropped_stride_x=25, cropped_stri
 
 class RankData(data.Dataset):
 
-    def __init__(self, data_list="Train", aug=False):
+    def __init__(self, data_list="Train", aug=False, patch_size=[500, 500]):
         self.data_list = data_list
         self.aug = aug
+        self.patch_size = patch_size
         self._read_path()
 
     def __len__(self):
@@ -65,8 +66,8 @@ class RankData(data.Dataset):
 
     def __getitem__(self, index):
         x = np.array(Image.open(self.data_path[index]).convert("RGB"))
-        x = random_crop(x, output_size=[500, 500])
-        mini_batch = ranking_data_geneartor(x, image_shape=[400, 400])
+        x = random_crop(x, output_size=self.patch_size)
+        mini_batch = ranking_data_geneartor(x, image_shape=[self.patch_size[0]-100, self.patch_size[1]-100])
         label = [4, 3, 2, 1, 0]
         random.shuffle(label)
         mini_batch = mini_batch[label, :, :, :]

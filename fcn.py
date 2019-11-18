@@ -34,6 +34,7 @@ class FCN32s(nn.Module):
     def forward(self, x):
         output = self.pretrained_net(x)
         x5 = output['x5']  # size=(N, 512, x.H/32, x.W/32)
+        print(x5.size())
 
         score = self.bn1(self.relu(self.deconv1(x5)))     # size=(N, 512, x.H/16, x.W/16)
         score = self.bn2(self.relu(self.deconv2(score)))  # size=(N, 256, x.H/8, x.W/8)
@@ -166,6 +167,8 @@ class VGGNet(VGG):
         if pretrained:
             exec("self.load_state_dict(models.%s(pretrained=True).state_dict())" % model)
 
+        # self.load_state_dict(torch.load("model/ssl_vgg/iter_15000.pth"), strict=False) # load ssl pre-trained model
+
         if not requires_grad:
             for param in super().parameters():
                 param.requires_grad = False
@@ -220,16 +223,24 @@ def make_layers(cfg, batch_norm=False):
     return nn.Sequential(*layers)
 
 def fcn8s(pretrained=False, n_class=1):
-    vgg_model = VGGNet(pretrained=True,  requires_grad=True)
+    vgg_model = VGGNet(pretrained=pretrained,  requires_grad=True)
     fcn_model = FCN8s(pretrained_net=vgg_model, n_class=n_class)
     return fcn_model
 
 def fcn16s(pretrained=False, n_class=1):
-    vgg_model = VGGNet(pretrained=True,  requires_grad=True)
+    vgg_model = VGGNet(pretrained=pretrained,  requires_grad=True)
     fcn_model = FCN16s(pretrained_net=vgg_model, n_class=n_class)
     return fcn_model
 
 def fcn32s(pretrained=False, n_class=1):
-    vgg_model = VGGNet(pretrained=True,  requires_grad=True)
+    vgg_model = VGGNet(pretrained=pretrained,  requires_grad=True)
     fcn_model = FCN32s(pretrained_net=vgg_model, n_class=n_class)
     return fcn_model
+
+
+
+
+# fcn_model = net = fcn32s(pretrained=True, n_class=1)
+# input = torch.autograd.Variable(torch.randn(1, 3, 224, 224))
+# output = fcn_model(input)
+# print(output.size())
